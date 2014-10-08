@@ -22,11 +22,15 @@ cov:
 	go test -coverprofile=coverage.out $(TEST) $(PROJECT)
 
 .PHONY: test
-test: test-main
+test: test-main test-config
 
 .PHONY: test-main
 test-main:
 	go test $(PROJECT)
+
+.PHONY: test-config
+test-config:
+	go test $(PROJECT)/config
 
 .PHONY: run
 run: $(EXE)

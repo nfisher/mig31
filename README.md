@@ -19,7 +19,7 @@ Sample Config:
     <confirmisoptional>true</confirmisoptional>
     <placement strategy="SimpleStrategy" options="{replication_factor:1}"/>
   </environment>
-  <environment name="lve-prem" host="cassandra-premium.eu-west-1a.i.lve.hailocab.net">
+  <environment name="lve-prem" host="lve-prem.local">
     <placement strategy="NetworkTopologyStrategy" options="{eu-west-1 : 3, us-east-1 : 3, ap-northeast-1 : 3}"/>
   </environment>
 </environments>
