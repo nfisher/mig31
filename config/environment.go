@@ -53,20 +53,11 @@ func (environment *Environment) Options() (strategy string) {
 
 func (environment *Environments) Get(name string) (env *Environment) {
 	envs := environment.Environments
-	for i := 0; i < len(envs); i++ {
-		if envs[i].Name == name {
-			env = &envs[i]
+	for _, e := range envs {
+		if e.Name == name {
+			env = &e
+			break
 		}
 	}
 	return
-}
-
-func (environments *Environments) ApplyStrategy(envName string, target StrategyTarget) {
-	envs := environments.Environments
-	target.CassandraStrategy("boop", "boop")
-	for i := 0; i < len(envs); i++ {
-		if envs[i].Name == envName {
-			target.CassandraStrategy(envs[i].Strategy(), envs[i].Options())
-		}
-	}
 }

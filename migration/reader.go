@@ -43,8 +43,7 @@ func (reader *MigrationReader) collectMigrationNames() (err error) {
 	}
 
 	// TODO: (NF 2014-10-09) Filter only CQL files.
-	for i := 0; i < len(files); i++ {
-		f := files[i]
+	for _, f := range files {
 		if !f.IsDir() {
 			migrations = append(migrations, f.Name())
 		}
@@ -72,8 +71,8 @@ func (reader *MigrationReader) ReadAllMigrations() (migrations Migrations, err e
 	dirPath := reader.dirPath
 	migrationFiles := reader.migrationFiles
 
-	for i := 0; i < len(migrationFiles); i++ {
-		fullPath := path.Join(dirPath, migrationFiles[i])
+	for _, filename := range migrationFiles {
+		fullPath := path.Join(dirPath, filename)
 		fd, err = os.Open(fullPath)
 		if err != nil {
 			return

@@ -2,31 +2,32 @@ package migration
 
 import (
 	"github.com/hailocab/mig31/config"
+	"github.com/hailocab/mig31/set"
 	"testing"
 )
 
 const (
 	validUpOnly = `-- @up
 
-create keyspace release with placement_strategy = '$${placement_strategy}' and strategy_options = $${strategy_options};`
+create keyspace release with replication = {'class': '$${placement_strategy}', $${strategy_options}};`
 	validUpDown = `-- @up
 
-create keyspace release with placement_strategy = '$${placement_strategy}' and strategy_options = $${strategy_options};
+create keyspace release with replication = {'class': '$${placement_strategy}', $${strategy_options}};
 -- @down
 
 drop keyspace release;
 `
 	missingUpMarker = `
-create keyspace release with placement_strategy = '$${placement_strategy}' and strategy_options = $${strategy_options};`
+create keyspace release with replication = {'class': '$${placement_strategy}', $${strategy_options}};`
 
-	expectedParseUp = `
-create keyspace release with placement_strategy = '$${placement_strategy}' and strategy_options = $${strategy_options};`
+	expectedParsedUp = `
+create keyspace release with replication = {'class': '$${placement_strategy}', $${strategy_options}};`
 
 	expectedParsedDown = `
 drop keyspace release;
 `
 	expectedAppliedUp = `
-create keyspace release with placement_strategy = 'SimpleStrategy' and strategy_options = {replication_factor:1};`
+create keyspace release with replication = {'class': 'SimpleStrategy', replication_factor: 1};`
 )
 
 // end of constants
@@ -37,7 +38,7 @@ func Test_should_parse_up_migration_correctly(t *testing.T) {
 		t.Fatal("Should parse migration successfully.")
 	}
 
-	expected := Migration{UpMigration: expectedParseUp, Source: "001_create_schema.cql"}
+	expected := Migration{UpMigration: expectedParsedUp, Source: "001_create_schema.cql"}
 	if *mig != expected {
 		t.Fatal("Expected", expected, "BUT was", *mig)
 	}
@@ -49,7 +50,7 @@ func Test_should_parse_up_and_down_migration_correctly(t *testing.T) {
 		t.Fatal("Should parse migration successfully.")
 	}
 
-	expected := Migration{UpMigration: expectedParseUp, DownMigration: expectedParsedDown, Source: "001_create_schema.cql"}
+	expected := Migration{UpMigration: expectedParsedUp, DownMigration: expectedParsedDown, Source: "001_create_schema.cql"}
 	if *mig != expected {
 		t.Fatal("Expected <", expected, "> but was <", *mig, ">.")
 	}
@@ -63,8 +64,8 @@ func Test_should_fail_if_up_marker_not_specified(t *testing.T) {
 }
 
 func Test_should_apply_environment_values_to_up_migration(t *testing.T) {
-	env := config.NewEnvironment("dev", "localhost", "SimpleStrategy", "{replication_factor:1}")
-	mig := &Migration{UpMigration: expectedParseUp}
+	env := config.NewEnvironment("dev", "localhost", "SimpleStrategy", "replication_factor: 1")
+	mig := &Migration{UpMigration: expectedParsedUp}
 	appliedMig, err := ApplyEnvironmentValues(mig, env)
 
 	if err != nil {
@@ -75,5 +76,13 @@ func Test_should_apply_environment_values_to_up_migration(t *testing.T) {
 
 	if *appliedMig != expectedMig {
 		t.Fatal("Expected", expectedMig, "but was", *appliedMig)
+	}
+}
+
+func Test_should_generate_full_schema_with_empty_set(t *testing.T) {
+	migs := Migrations{Migration{UpMigration: expectedParsedUp}}
+	_, err := migs.GenerateSchemaFrom(set.New())
+	if err != nil {
+		t.Fatal(err)
 	}
 }

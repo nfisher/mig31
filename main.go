@@ -36,10 +36,10 @@ func main() {
 		ExitWithError(readErr, exitErrorReadingEnvironmentConfig)
 	}
 
-	migs.ApplyEnvironmentStrategy(env)
-	index := FindIndex(rtConfig, env)
+	set := FindAppliedSet(rtConfig, env)
 
-	schema, schemaErr := migs.GenerateSchemaFrom(index)
+	migs.ApplyEnvironmentStrategy(env)
+	schema, schemaErr := migs.GenerateSchemaFrom(set)
 	if schemaErr != nil {
 		ExitWithError(schemaErr, exitNoEnvironmentDefined)
 	}
@@ -47,13 +47,4 @@ func main() {
 	if rtConfig.Offline {
 		ExitWithMessage(schema, 0)
 	}
-}
-
-// FindIndex naively identifies the index position in the migration to run from.
-// A better way would be to use the Migration.Source value and compose a set.
-func FindIndex(rtConfig *RuntimeConfig, env *config.Environment) (index int) {
-	if rtConfig.Offline {
-		return
-	}
-	return
 }

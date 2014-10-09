@@ -39,7 +39,7 @@ test-migration:
 
 .PHONY: run
 run: $(EXE)
-	$(EXE) -environment=dev
+	$(EXE) -environment=dev -offline
 
 $(EXE): test
 	go install $(PROJECT)

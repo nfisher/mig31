@@ -40,7 +40,7 @@ func Flags() (rtConfig *RuntimeConfig) {
 	flag.BoolVar(&rtConfig.DryRun, "dryrun", false, "Dry run and display the changes that would be applied. Implies verbose.")
 	flag.BoolVar(&rtConfig.Verbose, "verbose", false, "Enable verbose output.")
 	flag.StringVar(&rtConfig.ConfigPath, "config", "config.xml", "Configuration file that specifies placement and strategy options.")
-	flag.StringVar(&rtConfig.EnvironmentName, "EnvironmentName", "", "EnvironmentName to target.")
+	flag.StringVar(&rtConfig.EnvironmentName, "environment", "", "Name of environment to target.")
 	flag.StringVar(&rtConfig.MigrationsPath, "migrations", "./migrations", "Path to the migrations folder.")
 	flag.Parse()
 

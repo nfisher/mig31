@@ -3,6 +3,7 @@ package migration
 import (
 	"errors"
 	"github.com/hailocab/mig31/config"
+	"github.com/hailocab/mig31/set"
 	"path"
 	"strings"
 )
@@ -64,22 +65,25 @@ func ApplyEnvironmentValues(migration *Migration, environment *config.Environmen
 	return
 }
 
+// TODO: (NF 2014-10-09) Not really happy with this method feels to finicky and prone to allowing the user to misuse the API.
 func (migs Migrations) ApplyEnvironmentStrategy(env *config.Environment) (err error) {
 	var currentMig *Migration
-	for i := 0; i < len(migs); i++ {
-		currentMig, err = ApplyEnvironmentValues(&migs[i], env)
+	for pos, mig := range migs {
+		currentMig, err = ApplyEnvironmentValues(&mig, env)
 		if err != nil {
 			return
 		}
-		migs[i] = *currentMig
+		migs[pos] = *currentMig
 	}
 
 	return
 }
-func (migs Migrations) GenerateSchemaFrom(index int) (schema string, err error) {
-	for ; index < len(migs); index++ {
-		mig := migs[index]
-		schema += mig.UpMigration + "\n"
+
+func (migs Migrations) GenerateSchemaFrom(appliedSet set.Set) (schema string, err error) {
+	for _, mig := range migs {
+		if !appliedSet[mig.Source] {
+			schema += mig.UpMigration + "\n"
+		}
 	}
 	return
 }
