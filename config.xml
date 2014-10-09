@@ -1,0 +1,8 @@
+<migrations>
+  <environments>
+    <environment name="dev" host="10.2.0.21">
+      <confirmisoptional>true</confirmisoptional>
+      <placement strategy="SimpleStrategy" options="replication_factor: 1"/>
+    </environment>
+  </environments>
+</migrations>
