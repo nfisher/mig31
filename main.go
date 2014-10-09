@@ -39,6 +39,7 @@ func main() {
 	set := FindAppliedSet(rtConfig, env)
 
 	migs.ApplyEnvironmentStrategy(env)
+
 	schema, schemaErr := migs.GenerateSchemaFrom(set)
 	if schemaErr != nil {
 		ExitWithError(schemaErr, exitNoEnvironmentDefined)
