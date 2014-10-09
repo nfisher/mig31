@@ -11,7 +11,7 @@ func Test_config_should_be_deserialised_correctly(t *testing.T) {
       <confirmisoptional>true</confirmisoptional>
       <placement strategy="SimpleStrategy" options="{replication_factor:1}"/>
     </environment>
-    <environment name="lve-prem" host="cassandra-premium.eu-west-1a.i.lve.hailocab.net">
+    <environment name="lve-prem" host="lve-prem.local">
       <placement strategy="NetworkTopologyStrategy" options="{eu-west-1 : 3, us-east-1 : 3, ap-northeast-1 : 3}"/>
     </environment>
   </environments>
@@ -32,7 +32,7 @@ func Test_config_should_be_deserialised_correctly(t *testing.T) {
 		t.Fatal("Expected", devEnv, "\nbut was", env.Environments[0])
 	}
 
-	lveEnv := Environment{Name: "lve-prem", Host: "cassandra-premium.eu-west-1a.i.lve.hailocab.net", ConfirmIsOptional: false, Placement: Placement{Strategy: "NetworkTopologyStrategy", Options: "{eu-west-1 : 3, us-east-1 : 3, ap-northeast-1 : 3}"}}
+	lveEnv := Environment{Name: "lve-prem", Host: "lve-prem.local", ConfirmIsOptional: false, Placement: Placement{Strategy: "NetworkTopologyStrategy", Options: "{eu-west-1 : 3, us-east-1 : 3, ap-northeast-1 : 3}"}}
 	if lveEnv != env.Environments[1] {
 		t.Fatal("Expected", lveEnv, "but was", env.Environments[1])
 	}
