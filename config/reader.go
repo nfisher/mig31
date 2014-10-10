@@ -9,7 +9,7 @@ import (
 )
 
 // ReadEnvConfig reads the environments configuration file that contains C* placement strategy and options.
-func ReadEnvConfig(rtConfig *runtime.RuntimeConfig) (env *Environment, err error) {
+func ReadEnvConfig(rtConfig *runtime.Config) (env *Environment, err error) {
 	var (
 		contents string
 		fd       io.Reader

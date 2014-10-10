@@ -9,7 +9,7 @@ import (
 func main() {
 	rtConfig := runtime.Flags()
 
-	configErr := runtime.ValidateConfig(rtConfig)
+	configErr := rtConfig.Validate()
 	if configErr != nil {
 		runtime.Usage()
 		runtime.ExitWithError(configErr, configErr.ExitCode())
@@ -20,6 +20,25 @@ func main() {
 		runtime.ExitWithError(envConfigErr, runtime.ExitErrorReadingEnvConfig)
 	}
 
+	if rtConfig.Offline {
+		Offline(rtConfig, env)
+	}
+
+	if rtConfig.DryRun {
+		Dryrun()
+	}
+
+	if rtConfig.Verbose {
+		VerboseApply()
+	}
+
+	if !rtConfig.DryRun && !rtConfig.Offline {
+		Apply()
+	}
+}
+
+// Offline generates the full schema and exits.
+func Offline(rtConfig *runtime.Config, env *config.Environment) {
 	migReader := migration.NewReader(rtConfig.MigrationsPath)
 	migs, readErr := migReader.ReadAllMigrations()
 	if readErr != nil {
@@ -37,8 +56,15 @@ func main() {
 	if schemaErr != nil {
 		runtime.ExitWithError(schemaErr, runtime.ExitNoEnvironmentDefined)
 	}
+	runtime.ExitWithMessage(schema, 0)
+}
 
-	if rtConfig.Offline {
-		runtime.ExitWithMessage(schema, 0)
-	}
+// Dryrun connect to get applied set and output schema.
+func Dryrun() {
+}
+
+func VerboseApply() {
+}
+
+func Apply() {
 }

@@ -7,7 +7,7 @@ import (
 )
 
 // FindAppliedSet find the set of migrations that are currently applied.
-func FindAppliedSet(rtConfig *runtime.RuntimeConfig, env *config.Environment) (appliedSet set.Set) {
+func FindAppliedSet(rtConfig *runtime.Config, env *config.Environment) (appliedSet set.Set) {
 	if rtConfig.Offline {
 		appliedSet = set.New()
 		return

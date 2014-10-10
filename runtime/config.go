@@ -5,7 +5,7 @@ import (
 	"github.com/hailocab/mig31/errors"
 )
 
-type RuntimeConfig struct {
+type Config struct {
 	MigrationsPath  string
 	ConfigPath      string
 	EnvironmentName string
@@ -19,7 +19,7 @@ func Usage() {
 }
 
 // ValidateConfig verifies the provided runtime config is in a sane state returning the first error encountered.
-func ValidateConfig(rtConfig *RuntimeConfig) (err *errors.FatalError) {
+func (rtConfig *Config) Validate() (err *errors.FatalError) {
 	if rtConfig.EnvironmentName == "" {
 		err = errors.New("EnvironmentName is required!", ExitIncorrectFlag)
 		return
@@ -33,9 +33,14 @@ func ValidateConfig(rtConfig *RuntimeConfig) (err *errors.FatalError) {
 	return
 }
 
-// Flags parses all of the command-line flags and returns them as a RuntimeConfig.
-func Flags() (rtConfig *RuntimeConfig) {
-	rtConfig = &RuntimeConfig{}
+func New() (rtConfig *Config) {
+	rtConfig = &Config{}
+	return
+}
+
+// Flags parses all of the command-line flags and returns them as a Config.
+func Flags() (rtConfig *Config) {
+	rtConfig = New()
 
 	flag.BoolVar(&rtConfig.Offline, "offline", false, "Outputs the full schema without connecting to Cassandra.")
 	flag.BoolVar(&rtConfig.DryRun, "dryrun", false, "Dry run and display the changes that would be applied. Implies verbose.")
