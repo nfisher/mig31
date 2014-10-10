@@ -3,49 +3,42 @@ package main
 import (
 	"github.com/hailocab/mig31/config"
 	"github.com/hailocab/mig31/migration"
-)
-
-const (
-	exitCodeIncorrectFlag = iota + 1
-	exitErrorReadingEnvironmentConfig
-	exitNoEnvironmentDefined
+	"github.com/hailocab/mig31/runtime"
 )
 
 func main() {
-	rtConfig := Flags()
+	rtConfig := runtime.Flags()
 
-	configErr := ValidateConfig(rtConfig)
+	configErr := runtime.ValidateConfig(rtConfig)
 	if configErr != nil {
-		Usage()
-		ExitWithError(configErr, configErr.(*configError).ExitCode())
+		runtime.Usage()
+		runtime.ExitWithError(configErr, configErr.ExitCode())
 	}
 
-	envs, envConfigErr := config.ReadConfig(rtConfig.ConfigPath)
+	env, envConfigErr := config.ReadEnvConfig(rtConfig)
 	if envConfigErr != nil {
-		ExitWithError(envConfigErr, exitErrorReadingEnvironmentConfig)
-	}
-
-	env := envs.Get(rtConfig.EnvironmentName)
-	if env == nil {
-		ExitWithMessage("Environment "+rtConfig.EnvironmentName+" not defined in "+rtConfig.ConfigPath, exitNoEnvironmentDefined)
+		runtime.ExitWithError(envConfigErr, runtime.ExitErrorReadingEnvConfig)
 	}
 
 	migReader := migration.NewReader(rtConfig.MigrationsPath)
 	migs, readErr := migReader.ReadAllMigrations()
 	if readErr != nil {
-		ExitWithError(readErr, exitErrorReadingEnvironmentConfig)
+		runtime.ExitWithError(readErr, runtime.ExitErrorReadingEnvConfig)
 	}
 
-	set := FindAppliedSet(rtConfig, env)
+	appliedSet := FindAppliedSet(rtConfig, env)
 
 	migs.ApplyEnvironmentStrategy(env)
 
-	schema, schemaErr := migs.GenerateSchemaFrom(set)
+	sourceSet := migs.SourceSet()
+	diff := sourceSet.Diff(appliedSet)
+
+	schema, schemaErr := migs.GenerateSchemaFrom(diff)
 	if schemaErr != nil {
-		ExitWithError(schemaErr, exitNoEnvironmentDefined)
+		runtime.ExitWithError(schemaErr, runtime.ExitNoEnvironmentDefined)
 	}
 
 	if rtConfig.Offline {
-		ExitWithMessage(schema, 0)
+		runtime.ExitWithMessage(schema, 0)
 	}
 }

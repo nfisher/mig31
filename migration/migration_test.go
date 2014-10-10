@@ -79,6 +79,16 @@ func Test_should_apply_environment_values_to_up_migration(t *testing.T) {
 	}
 }
 
+func Test_should_return_full_source_set(t *testing.T) {
+	migs := Migrations{Migration{UpMigration: expectedParsedUp, Source: "001_create.cql"}}
+	actual := migs.SourceSet()
+	expected := set.Set{"001_create.cql": true}
+
+	if !expected.Equal(actual) {
+		t.Fatal("Source sets should match.")
+	}
+}
+
 func Test_should_generate_full_schema_with_empty_set(t *testing.T) {
 	migs := Migrations{Migration{UpMigration: expectedParsedUp}}
 	_, err := migs.GenerateSchemaFrom(set.New())

@@ -12,11 +12,22 @@ func (set Set) Add(value string) {
 	set[value] = true
 }
 
-// Diff returns the values that the left set has that the right set does not.
+// Contains checks if the specified value is contained in the set.
+func (set Set) Contains(value string) (contains bool) {
+	contains = set[value]
+	return
+}
+
+func (set Set) Len() (length int) {
+	length = len(set)
+	return
+}
+
+// Diff returns a new set with the values the left set has that are absent from the right set.
 func (left Set) Diff(right Set) (diff Set) {
 	diff = New()
 	for l := range left {
-		if !right[l] {
+		if !right.Contains(l) {
 			diff.Add(l)
 		}
 	}
@@ -40,6 +51,17 @@ func (left Set) Intersection(right Set) (intersection Set) {
 	for l := range left {
 		if right[l] {
 			intersection.Add(l)
+		}
+	}
+	return
+}
+
+func (left Set) Equal(right Set) (isEqual bool) {
+	isEqual = left.Len() == right.Len()
+	for l := range left {
+		isEqual = right.Contains(l)
+		if !isEqual {
+			return
 		}
 	}
 	return

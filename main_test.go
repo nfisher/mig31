@@ -1,12 +1,13 @@
 package main
 
 import (
+	"github.com/hailocab/mig31/runtime"
 	"testing"
 )
 
 func Test_flag_defaults_should_match(t *testing.T) {
-	expected := &RuntimeConfig{ConfigPath: "config.xml", EnvironmentName: "", DryRun: false, Verbose: false, MigrationsPath: "./migrations"}
-	actual := Flags()
+	expected := &runtime.RuntimeConfig{ConfigPath: "config.xml", EnvironmentName: "", DryRun: false, Verbose: false, MigrationsPath: "./migrations"}
+	actual := runtime.Flags()
 
 	if *expected != *actual {
 		t.Fatal("Expected", expected, "but was", actual)

@@ -7,14 +7,19 @@ import (
 	"testing"
 )
 
+const (
+	migrationsDirPrefix = "migrations"
+	migrationFilePrefix = "001_migration"
+)
+
 func SetupMigrationsDir() (dirPath string, err error) {
-	dirPath, err = ioutil.TempDir("", "migrations")
+	dirPath, err = ioutil.TempDir("", migrationsDirPrefix)
 	if err != nil {
 		return
 	}
 
 	var file *os.File
-	file, err = ioutil.TempFile(dirPath, "001_migration")
+	file, err = ioutil.TempFile(dirPath, migrationFilePrefix)
 	if err != nil {
 		return
 	}
@@ -98,8 +103,8 @@ func Test_read_all_migrations(t *testing.T) {
 		t.Fatal("UpMigration should not be empty.")
 	}
 
-	if firstMig.Source == "" {
-		t.Fatal("Source should not be empty.")
+	if !strings.HasPrefix(firstMig.Source, migrationFilePrefix) {
+		t.Fatal("Expected Source to be prefixed by", migrationFilePrefix, "but was", firstMig.Source)
 	}
 
 	if strings.Contains(firstMig.Source, "/") {

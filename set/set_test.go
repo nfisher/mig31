@@ -10,14 +10,16 @@ func Test_union(t *testing.T) {
 
 	actual := s1.Union(s2)
 	expectedUnion := Set{"hello": true, "world": true, "Nathan": true}
-	if len(actual) != len(expectedUnion) {
-		t.Fatal("Expected", len(expectedUnion), "but was", len(actual))
+	if actual.Len() != expectedUnion.Len() {
+		t.Fatal("Expected", expectedUnion.Len(), "but was", actual.Len())
 	}
 
-	for m := range expectedUnion {
-		if !actual[m] {
-			t.Fatal(m, " not found in set.")
-		}
+	if !actual.Contains("hello") {
+		t.Fatal("Set does not contain expected element.")
+	}
+
+	if !expectedUnion.Equal(actual) {
+		t.Fatal("Sets are not equal.")
 	}
 }
 

@@ -1,7 +1,8 @@
-package main
+package runtime
 
 import (
 	"flag"
+	"github.com/hailocab/mig31/errors"
 )
 
 type RuntimeConfig struct {
@@ -18,14 +19,14 @@ func Usage() {
 }
 
 // ValidateConfig verifies the provided runtime config is in a sane state returning the first error encountered.
-func ValidateConfig(rtConfig *RuntimeConfig) (err error) {
+func ValidateConfig(rtConfig *RuntimeConfig) (err *errors.FatalError) {
 	if rtConfig.EnvironmentName == "" {
-		err = newError("EnvironmentName is required!", exitCodeIncorrectFlag)
+		err = errors.New("EnvironmentName is required!", ExitIncorrectFlag)
 		return
 	}
 
 	if rtConfig.ConfigPath == "" {
-		err = newError("Configuration file path cannot be empty!", exitCodeIncorrectFlag)
+		err = errors.New("Configuration file path cannot be empty!", ExitIncorrectFlag)
 		return
 	}
 
