@@ -55,8 +55,8 @@ func (reader *MigrationReader) collectMigrationNames() (err error) {
 	return
 }
 
-// ReadAllMigrations reads all of the migrations from the specified directory.
-func (reader *MigrationReader) ReadAllMigrations() (migrations Migrations, err error) {
+// ReadAll reads all of the migrations from the specified directory.
+func (reader *MigrationReader) ReadAll() (migrations Migrations, err error) {
 	var (
 		fd    *os.File
 		bytes []byte

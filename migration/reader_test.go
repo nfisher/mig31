@@ -88,7 +88,7 @@ func Test_read_all_migrations(t *testing.T) {
 
 	reader := NewReader(dirPath)
 
-	migs, err := reader.ReadAllMigrations()
+	migs, err := reader.ReadAll()
 	if err != nil {
 		t.Fatal(err)
 	}

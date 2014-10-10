@@ -9,6 +9,7 @@ const (
 	ExitIncorrectFlag = iota + 1
 	ExitErrorReadingEnvConfig
 	ExitNoEnvironmentDefined
+	ExitErrorReadingMigrations
 )
 
 // ExitWithError prints the error and exits using the supplied exit code.

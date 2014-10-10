@@ -6,8 +6,10 @@ import (
 )
 
 func Test_flag_defaults_should_match(t *testing.T) {
-	expected := &runtime.Config{ConfigPath: "config.xml", EnvironmentName: "", DryRun: false, Verbose: false, MigrationsPath: "./migrations"}
-	actual := runtime.Flags()
+	expected := runtime.New()
+	expected.ConfigPath = "config.xml"
+	expected.MigrationsPath = "./migrations"
+	actual := runtime.ParseFlags()
 
 	if *expected != *actual {
 		t.Fatal("Expected", expected, "but was", actual)

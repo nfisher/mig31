@@ -7,45 +7,59 @@ import (
 )
 
 func main() {
-	rtConfig := runtime.Flags()
+	var (
+		err  error
+		env  *config.Environment
+		migs migration.Migrations
+	)
 
-	configErr := rtConfig.Validate()
-	if configErr != nil {
+	flags := runtime.ParseFlags()
+
+	err = flags.Validate()
+	if err != nil {
 		runtime.Usage()
-		runtime.ExitWithError(configErr, configErr.ExitCode())
+		runtime.ExitWithError(err, runtime.ExitIncorrectFlag)
 	}
 
-	env, envConfigErr := config.ReadEnvConfig(rtConfig)
-	if envConfigErr != nil {
-		runtime.ExitWithError(envConfigErr, runtime.ExitErrorReadingEnvConfig)
+	env, err = config.ReadEnvConfig(flags)
+	if err != nil {
+		runtime.ExitWithError(err, runtime.ExitErrorReadingEnvConfig)
 	}
 
-	if rtConfig.Offline {
-		Offline(rtConfig, env)
+	migs, err = ReadMigrations(flags)
+	if err != nil {
+		runtime.ExitWithError(err, runtime.ExitErrorReadingMigrations)
 	}
 
-	if rtConfig.DryRun {
+	if flags.Offline {
+		Offline(env, migs)
+	}
+
+	if flags.DryRun {
 		Dryrun()
 	}
 
-	if rtConfig.Verbose {
+	if flags.Verbose {
 		VerboseApply()
 	}
 
-	if !rtConfig.DryRun && !rtConfig.Offline {
+	if !flags.DryRun && !flags.Offline {
 		Apply()
 	}
 }
 
-// Offline generates the full schema and exits.
-func Offline(rtConfig *runtime.Config, env *config.Environment) {
-	migReader := migration.NewReader(rtConfig.MigrationsPath)
-	migs, readErr := migReader.ReadAllMigrations()
-	if readErr != nil {
-		runtime.ExitWithError(readErr, runtime.ExitErrorReadingEnvConfig)
+func ReadMigrations(flags *runtime.Flags) (migs migration.Migrations, err error) {
+	migReader := migration.NewReader(flags.MigrationsPath)
+	migs, err = migReader.ReadAll()
+	if err != nil {
+		return
 	}
+	return
+}
 
-	appliedSet := FindAppliedSet(rtConfig, env)
+// Offline generates the full schema and exits.
+func Offline(env *config.Environment, migs migration.Migrations) {
+	appliedSet := FindAppliedSet(env)
 
 	migs.ApplyEnvironmentStrategy(env)
 

@@ -20,14 +20,13 @@ type Placement struct {
 type Environment struct {
 	Name              string    `xml:"name,attr"`
 	Host              string    `xml:"host,attr"`
+	Keyspace          string    `xml:"keyspace,attr"`
 	ConfirmIsOptional bool      `xml:"confirmisoptional,omitempty"`
 	Placement         Placement `xml:"placement"`
 }
 
 func NewEnvironment(name, host, strategy, options string) (environment *Environment) {
-	environment = &Environment{Name: name, Host: host}
-	environment.Placement.Strategy = strategy
-	environment.Placement.Options = options
+	environment = &Environment{Name: name, Host: host, Placement: Placement{Strategy: strategy, Options: options}}
 	return
 }
 

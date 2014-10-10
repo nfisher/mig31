@@ -8,15 +8,9 @@ import (
 	"os"
 )
 
-// ReadEnvConfig reads the environments configuration file that contains C* placement strategy and options.
-func ReadEnvConfig(rtConfig *runtime.Config) (env *Environment, err error) {
-	var (
-		contents string
-		fd       io.Reader
-		rawData  []byte
-		envs     *Environments
-	)
-	filename := rtConfig.ConfigPath
+func readFileContents(filename string) (contents string, err error) {
+	var fd io.Reader
+	var rawData []byte
 
 	fd, err = os.Open(filename)
 	if err != nil {
@@ -29,16 +23,34 @@ func ReadEnvConfig(rtConfig *runtime.Config) (env *Environment, err error) {
 	}
 
 	contents = string(rawData)
+	return
+}
+
+// ReadEnvConfig reads the environments configuration file that contains C* host, placement strategy and options.
+func ReadEnvConfig(flags *runtime.Flags) (env *Environment, err error) {
+	var (
+		contents string
+		envs     *Environments
+	)
+
+	contents, err = readFileContents(flags.ConfigPath)
+	if err != nil {
+		return
+	}
 
 	envs, err = UnmarshalConfig(contents)
 	if err != nil {
 		return
 	}
 
-	env = envs.Get(rtConfig.EnvironmentName)
+	env = envs.Get(flags.EnvironmentName)
 	if env == nil {
-		err = errors.New("No Config found for environment" + rtConfig.EnvironmentName + "from" + rtConfig.ConfigPath)
+		err = errors.New("No Config found for environment" + flags.EnvironmentName + "from" + flags.ConfigPath)
 		return
+	}
+
+	if flags.Offline {
+		env.Host = ""
 	}
 
 	return
