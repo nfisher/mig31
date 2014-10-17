@@ -6,6 +6,7 @@ import (
 	"github.com/hailocab/mig31/runtime"
 )
 
+// main is the entry point for the application.
 func main() {
 	var (
 		err  error
@@ -37,6 +38,10 @@ func main() {
 
 	if flags.DryRun {
 		Dryrun()
+	}
+
+	if flags.Initialise {
+		Initialise()
 	}
 
 	if flags.Verbose {
@@ -81,4 +86,7 @@ func VerboseApply() {
 }
 
 func Apply() {
+}
+
+func Initialise() {
 }
