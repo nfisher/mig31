@@ -2,18 +2,47 @@ package main
 
 import (
 	"github.com/hailocab/mig31/config"
+	"github.com/hailocab/mig31/dao"
 	"github.com/hailocab/mig31/migration"
 	"github.com/hailocab/mig31/runtime"
+	"github.com/hailocab/mig31/set"
+
+	"fmt"
+	"strings"
+)
+
+const (
+	strategyVariable = "$${placement_strategy}"
+	optionsVariable  = "$${strategy_options}"
+	unlimitedReplace = -1
+	migrationSchema  = `
+  -- @up
+
+  CREATE KEYSPACE "migrations"
+    WITH replication = { 'class': '$${placement_strategy}', $${strategy_options} }
+    AND durable_writes = true;
+
+  CREATE TABLE migrations.migrations (
+    keyspace_name TEXT PRIMARY KEY,
+    ticketNumber INT,
+    nextTicketNumber INT,
+    migration_ids SET<TEXT>
+  ) WITH COMPACT STORAGE AND
+  compaction={'class': 'SizeTieredCompactionStrategy'} AND
+  compression={'sstable_compression': 'SnappyCompressor'};`
 )
 
 // main is the entry point for the application.
 func main() {
 	var (
-		err  error
-		env  *config.Environment
-		migs migration.Migrations
+		err          error
+		env          *config.Environment
+		availableSet set.Set
+		migs         migration.Migrations
+		//lockId      int
 	)
 
+	// parse and validate flags
 	flags := runtime.ParseFlags()
 
 	err = flags.Validate()
@@ -22,71 +51,90 @@ func main() {
 		runtime.ExitWithError(err, runtime.ExitIncorrectFlag)
 	}
 
+	// read environment configuration
 	env, err = config.ReadEnvConfig(flags)
 	if err != nil {
 		runtime.ExitWithError(err, runtime.ExitErrorReadingEnvConfig)
 	}
 
-	migs, err = ReadMigrations(flags)
+	// initialise the migration schema
+	if flags.Initialise {
+		err = Initialise(env)
+		if err != nil {
+			runtime.ExitWithError(err, runtime.ExitUnableToCreateSchema)
+		}
+		runtime.ExitWithMessage("Created migration schema.", 0)
+	}
+
+	// generate diffSet of available and applied migrations.
+	availableSet, err = migration.AvailableSet(flags.MigrationsPath)
 	if err != nil {
 		runtime.ExitWithError(err, runtime.ExitErrorReadingMigrations)
 	}
 
-	if flags.Offline {
-		Offline(env, migs)
+	cl := dao.New(env.Hosts())
+	appliedSet, err := cl.FindAppliedSet(env.Keyspace)
+	if err != nil {
+		runtime.ExitWithError(err, runtime.ExitErrorReadingMigrations)
 	}
 
-	if flags.DryRun {
-		Dryrun()
+	diffSet := availableSet.Diff(appliedSet)
+
+	// read migration files that haven't been applied.
+	migReader := migration.NewReader(flags.MigrationsPath, diffSet)
+	migs, err = migReader.ReadAll()
+	if err != nil {
+		runtime.ExitWithError(err, runtime.ExitErrorReadingMigrations)
 	}
 
-	if flags.Initialise {
-		Initialise()
+	//lockId, err =
+	iters := []migration.MigrationIter{UpdateSourceSet(env.Keyspace), UpdateStrategy(env)}
+
+	if flags.Offline || flags.Verbose {
+		iters = append(iters, PrintUp)
 	}
 
-	if flags.Verbose {
-		VerboseApply()
+	if !flags.DryRun {
+		iters = append(iters, UpdateSchema(cl))
 	}
 
-	if !flags.DryRun && !flags.Offline {
-		Apply()
+	// TODO: (NF 2014-10-21) This should probably error.
+	migs.Apply(iters...)
+}
+
+func UpdateSchema(cl dao.MigrationClient) migration.MigrationIter {
+	return func(m *migration.Migration) (migration *migration.Migration) {
+		migration = m
+		return
 	}
 }
 
-func ReadMigrations(flags *runtime.Flags) (migs migration.Migrations, err error) {
-	migReader := migration.NewReader(flags.MigrationsPath)
-	migs, err = migReader.ReadAll()
-	if err != nil {
+func UpdateSourceSet(ks string) migration.MigrationIter {
+	return func(m *migration.Migration) (migration *migration.Migration) {
+		update := "\nUPDATE migrations.migrations SET migration_ids = migration_ids + {'" + m.Source + "'} WHERE keyspace_name = '" + ks + "';"
+		m.UpMigration = m.UpMigration + update
+		migration = m
 		return
 	}
+}
+
+func UpdateStrategy(env *config.Environment) migration.MigrationIter {
+	return func(m *migration.Migration) (migration *migration.Migration) {
+		up := strings.Replace(m.UpMigration, strategyVariable, env.Strategy(), unlimitedReplace)
+		up = strings.Replace(up, optionsVariable, env.Options(), unlimitedReplace)
+		m.UpMigration = up
+		migration = m
+		return
+	}
+
+}
+
+func PrintUp(m *migration.Migration) (migration *migration.Migration) {
+	fmt.Println(m.UpMigration)
 	return
 }
 
-// Offline generates the full schema and exits.
-func Offline(env *config.Environment, migs migration.Migrations) {
-	appliedSet := FindAppliedSet(env)
+func Initialise(env *config.Environment) (err error) {
 
-	migs.ApplyEnvironmentStrategy(env)
-
-	sourceSet := migs.SourceSet()
-	diff := sourceSet.Diff(appliedSet)
-
-	schema, schemaErr := migs.GenerateSchemaFrom(diff)
-	if schemaErr != nil {
-		runtime.ExitWithError(schemaErr, runtime.ExitNoEnvironmentDefined)
-	}
-	runtime.ExitWithMessage(schema, 0)
-}
-
-// Dryrun connect to get applied set and output schema.
-func Dryrun() {
-}
-
-func VerboseApply() {
-}
-
-func Apply() {
-}
-
-func Initialise() {
+	return
 }

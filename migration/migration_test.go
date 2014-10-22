@@ -1,8 +1,6 @@
 package migration
 
 import (
-	"github.com/hailocab/mig31/config"
-	"github.com/hailocab/mig31/set"
 	"testing"
 )
 
@@ -22,6 +20,12 @@ create keyspace release with replication = {'class': '$${placement_strategy}', $
 
 	expectedParsedUp = `
 create keyspace release with replication = {'class': '$${placement_strategy}', $${strategy_options}};`
+
+	validMultiLineInput = `
+create keyspace release with replication = {'class': '$${placement_strategy}', $${strategy_options}};
+
+create table release (name TEXT PRIMARY KEY);
+`
 
 	expectedParsedDown = `
 drop keyspace release;
@@ -63,10 +67,11 @@ func Test_should_fail_if_up_marker_not_specified(t *testing.T) {
 	}
 }
 
+/*
 func Test_should_apply_environment_values_to_up_migration(t *testing.T) {
 	env := config.NewEnvironment("dev", "localhost", "SimpleStrategy", "replication_factor: 1")
 	mig := &Migration{UpMigration: expectedParsedUp}
-	appliedMig, err := ApplyEnvironmentValues(mig, env)
+	appliedMig, err := mig.ApplyEnvironmentValues(env)
 
 	if err != nil {
 		t.Fatal("An error occurred applying environment variables.")
@@ -79,15 +84,6 @@ func Test_should_apply_environment_values_to_up_migration(t *testing.T) {
 	}
 }
 
-func Test_should_return_full_source_set(t *testing.T) {
-	migs := Migrations{Migration{UpMigration: expectedParsedUp, Source: "001_create.cql"}}
-	actual := migs.SourceSet()
-	expected := set.Set{"001_create.cql": true}
-
-	if !expected.Equal(actual) {
-		t.Fatal("Source sets should match.")
-	}
-}
 
 func Test_should_generate_full_schema_with_empty_set(t *testing.T) {
 	migs := Migrations{Migration{UpMigration: expectedParsedUp}}
@@ -96,3 +92,4 @@ func Test_should_generate_full_schema_with_empty_set(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+*/

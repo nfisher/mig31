@@ -50,7 +50,9 @@ func ReadEnvConfig(flags *runtime.Flags) (env *Environment, err error) {
 	}
 
 	if flags.Offline {
-		env.Host = ""
+		optional := env.ConfirmIsOptional
+		env = NewEnvironment(env.Name, "", env.Strategy(), env.Options(), env.Keyspace, env.ConfirmIsOptional)
+		env.ConfirmIsOptional = optional
 	}
 
 	return

@@ -1,6 +1,6 @@
 <migrations>
   <environments>
-    <environment name="dev" host="10.2.0.21" keyspace="release">
+    <environment name="dev" host="192.168.33.10" keyspace="release">
       <confirmisoptional>true</confirmisoptional>
       <placement strategy="SimpleStrategy" options="replication_factor: 1"/>
     </environment>

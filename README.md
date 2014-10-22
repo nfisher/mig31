@@ -15,11 +15,11 @@ Sample Config:
 ```
 <migrations>
   <environments>
-    <environment name="dev" host="10.2.0.21">
+    <environment name="dev" host="10.2.0.21" keyspace="release">
       <confirmisoptional>true</confirmisoptional>
       <placement strategy="SimpleStrategy" options="{replication_factor:1}"/>
     </environment>
-    <environment name="lve-prem" host="lve-prem.local">
+    <environment name="lve-prem" host="lve-prem.local" keyspace="release">
       <placement strategy="NetworkTopologyStrategy" options="{eu-west-1 : 3, us-east-1 : 3, ap-northeast-1 : 3}"/>
     </environment>
   </environments>

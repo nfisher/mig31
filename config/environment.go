@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/xml"
+	"strings"
 )
 
 const (
@@ -25,8 +26,8 @@ type Environment struct {
 	Placement         Placement `xml:"placement"`
 }
 
-func NewEnvironment(name, host, strategy, options string) (environment *Environment) {
-	environment = &Environment{Name: name, Host: host, Placement: Placement{Strategy: strategy, Options: options}}
+func NewEnvironment(name, host, strategy, options, keyspace string, confirm bool) (environment *Environment) {
+	environment = &Environment{Name: name, Host: host, Placement: Placement{Strategy: strategy, Options: options}, Keyspace: keyspace, ConfirmIsOptional: confirm}
 	return
 }
 
@@ -48,6 +49,11 @@ func (environment *Environment) Strategy() (strategy string) {
 // Options returns the strategy options for the environment config.
 func (environment *Environment) Options() (strategy string) {
 	return environment.Placement.Options
+}
+
+func (environment *Environment) Hosts() (hosts []string) {
+	hosts = strings.Split(environment.Host, ",")
+	return
 }
 
 func (environment *Environments) Get(name string) (env *Environment) {

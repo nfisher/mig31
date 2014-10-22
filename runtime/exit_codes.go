@@ -10,6 +10,8 @@ const (
 	ExitErrorReadingEnvConfig
 	ExitNoEnvironmentDefined
 	ExitErrorReadingMigrations
+	ExitUnableToCreateSchema
+	ExitErrorGeneratingOfflineSchema
 )
 
 // ExitWithError prints the error and exits using the supplied exit code.

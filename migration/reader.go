@@ -2,6 +2,7 @@ package migration
 
 import (
 	"errors"
+	"github.com/hailocab/mig31/set"
 	"io/ioutil"
 	"os"
 	"path"
@@ -13,22 +14,30 @@ type MigrationReader struct {
 	migrationFiles []string
 }
 
-func NewReader(dirPath string) (reader *MigrationReader) {
-	reader = &MigrationReader{dirPath: dirPath}
+func NewReader(dirPath string, targetSet set.Set) (reader *MigrationReader) {
+	migrationFiles := make([]string, 0, len(targetSet))
+	for k := range targetSet {
+		migrationFiles = append(migrationFiles, k)
+	}
+	sort.Strings(migrationFiles)
+	reader = &MigrationReader{dirPath: dirPath, migrationFiles: migrationFiles}
 	return
 }
 
-// collectMigrationNames gives a list of available migration files in ascending order.
-func (reader *MigrationReader) collectMigrationNames() (err error) {
+// AvailableSet returns a set of the migration filenames found in dirPath.
+func AvailableSet(dirPath string) (availableSet set.Set, err error) {
 	var (
-		info       os.FileInfo
-		files      []os.FileInfo
-		migrations []string
+		info  os.FileInfo
+		files []os.FileInfo
 	)
-	dirPath := reader.dirPath
 
 	info, err = os.Stat(dirPath)
 	if err != nil {
+		return
+	}
+
+	if !info.IsDir() {
+		err = errors.New("You need to specify a directory for the migration location muppet.")
 		return
 	}
 
@@ -42,16 +51,14 @@ func (reader *MigrationReader) collectMigrationNames() (err error) {
 		return
 	}
 
-	// TODO: (NF 2014-10-09) Filter only CQL files.
+	availableSet = set.New()
+
 	for _, f := range files {
 		if !f.IsDir() {
-			migrations = append(migrations, f.Name())
+			availableSet.Add(f.Name())
 		}
 	}
 
-	sort.Strings(migrations)
-
-	reader.migrationFiles = migrations
 	return
 }
 
@@ -62,11 +69,6 @@ func (reader *MigrationReader) ReadAll() (migrations Migrations, err error) {
 		bytes []byte
 		mig   *Migration
 	)
-
-	err = reader.collectMigrationNames()
-	if err != nil {
-		return
-	}
 
 	dirPath := reader.dirPath
 	migrationFiles := reader.migrationFiles
