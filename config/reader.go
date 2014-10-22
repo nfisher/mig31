@@ -49,6 +49,11 @@ func ReadEnvConfig(flags *runtime.Flags) (env *Environment, err error) {
 		return
 	}
 
+	if env.Keyspace == "" {
+		err = errors.New("No Keyspace found for environment" + flags.EnvironmentName + "from" + flags.ConfigPath)
+		return
+	}
+
 	if flags.Offline {
 		optional := env.ConfirmIsOptional
 		env = NewEnvironment(env.Name, "", env.Strategy(), env.Options(), env.Keyspace, env.ConfirmIsOptional)

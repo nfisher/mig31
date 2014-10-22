@@ -12,6 +12,7 @@ const (
 	ExitErrorReadingMigrations
 	ExitUnableToCreateSchema
 	ExitErrorGeneratingOfflineSchema
+	ExitMigrationMismatch
 )
 
 // ExitWithError prints the error and exits using the supplied exit code.

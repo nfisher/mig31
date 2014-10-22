@@ -80,6 +80,12 @@ func main() {
 
 	diffSet := availableSet.Diff(appliedSet)
 
+	missingSet := appliedSet.Diff(availableSet)
+	if len(missingSet) != 0 {
+		fmt.Println(missingSet)
+		runtime.ExitWithMessage("This migration set does not match at all.", runtime.ExitMigrationMismatch)
+	}
+
 	// read migration files that haven't been applied.
 	migReader := migration.NewReader(flags.MigrationsPath, diffSet)
 	migs, err = migReader.ReadAll()
