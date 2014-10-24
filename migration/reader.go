@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"sort"
+	"strings"
 )
 
 type MigrationReader struct {
@@ -54,7 +55,7 @@ func AvailableSet(dirPath string) (availableSet set.Set, err error) {
 	availableSet = set.New()
 
 	for _, f := range files {
-		if !f.IsDir() {
+		if !f.IsDir() && strings.HasSuffix(f.Name(), ".cql") {
 			availableSet.Add(f.Name())
 		}
 	}

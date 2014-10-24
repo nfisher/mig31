@@ -24,7 +24,15 @@ func SetupMigrationsDir() (dirPath string, err error) {
 		return
 	}
 
-	err = ioutil.WriteFile(file.Name(), []byte(validUpDown), os.ModePerm)
+	oldName := file.Name()
+	err = ioutil.WriteFile(oldName, []byte(validUpDown), os.ModePerm)
+	if err != nil {
+		return
+	}
+	newName := oldName + ".cql"
+
+	// need to rename file so it is picked up by the filter for cql extension.
+	err = os.Rename(oldName, newName)
 	if err != nil {
 		return
 	}

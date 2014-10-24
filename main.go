@@ -88,7 +88,6 @@ func main() {
 
 	if !flags.DryRun && !flags.Offline {
 		runtime.ExitWithMessage("Sorry not implemented yet", runtime.ExitUnimplemented)
-		//iters = append(iters, UpdateSchema(cl))
 	}
 
 	// TODO: (NF 2014-10-21) This should probably error.

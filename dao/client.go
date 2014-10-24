@@ -6,16 +6,19 @@ import (
 )
 
 const (
-	migrationKeyspace = `CREATE KEYSPACE "migration"
+	migrationKeyspace = `CREATE KEYSPACE "%v"
     WITH replication = { 'class': '%v', %v }
     AND durable_writes = true;`
 
-	migrationTable = `CREATE TABLE migration.migrations (
+	migrationTable = `CREATE TABLE %v.migrations (
     keyspace_name TEXT PRIMARY KEY,
     ticketNumber INT,
     nextTicketNumber INT,
     migration_ids SET<TEXT>
   );`
+
+	keyspaceName = "migrations"
+	migrationIds = "migration_ids"
 )
 
 type MigrationClient interface {
@@ -34,11 +37,11 @@ func New(hosts []string) (client MigrationClient) {
 }
 
 func migKeyspace(strategy, options string) (cql string) {
-	cql = fmt.Sprintf(migrationKeyspace, strategy, options)
+	cql = fmt.Sprintf(migrationKeyspace, keyspaceName, strategy, options)
 	return
 }
 
 func migTable() (cql string) {
-	cql = migrationTable
+	cql = fmt.Sprintf(migrationTable, keyspaceName)
 	return
 }
