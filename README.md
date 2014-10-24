@@ -1,6 +1,12 @@
 ## Overview
 
-This is a command line tool to provide simple schema migrations for cassandra.  Currently only init, dryrun and offline modes are supported.  This requires an interrim dependency on cqlsh but this could be eliminated in the future with a CQL lexical parser.
+Mig31 is a command line tool to aid in the management of Cassandra schemas using CQL3. It's primary difference from other migration tools is that it allows for the specification of placement strategy and strategy options on a per environment basis. The goal in using this tool is to encourage tracking all schema changes with the service they are linked to rather than manually editing in each environment via cqlsh or cassandra-cli.
+
+The following functionality is currently enabled:
+
+- init - initialises a migration meta data table.
+- dryrun - outputs what would be run against the database based on the current state.
+- offline - outputs the full set of schema changes for the target enviroment.
 
 Sample Commands;
 
@@ -31,10 +37,9 @@ Sample Migration:
 ```
 -- @up
 
-create keyspace release
-  with placement_strategy = $${placement_strategy}
-  and strategy_options = $${placement_options}
-  and durable_writes = true;
+CREATE KEYSPACE "release"
+  WITH REPLICATION = {'class': '$${placement_strategy}', $${strategy_options}}
+  AND DURABLE_WRITES = true;
 
 CREATE TABLE release.release (keyspace_name TEXT PRIMARY KEY, ticketNumber INT, nextTicketNumber INT) 
   WITH COMPACT STORAGE AND compaction={'class': 'SizeTieredCompactionStrategy'} 
@@ -45,3 +50,11 @@ CREATE TABLE release.release (keyspace_name TEXT PRIMARY KEY, ticketNumber INT, 
 drop column family release;
 drop keyspace release;
 ```
+
+Improvements:
+
+- eliminate the use of cqlsh by creating a lexical parser that can hand off individual queries to gocql without error.
+- report identity.
+- checksum the schema after each migration so manual changes can be identified.
+- snapshotting that could collapse a freshly migrated schema into one migration.
+
