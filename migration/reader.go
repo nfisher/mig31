@@ -15,6 +15,7 @@ type MigrationReader struct {
 	migrationFiles []string
 }
 
+// NewReader will prepare a reader for the specified CQL migration file set.
 func NewReader(dirPath string, targetSet set.Set) (reader *MigrationReader) {
 	migrationFiles := make([]string, 0, len(targetSet))
 	for k := range targetSet {

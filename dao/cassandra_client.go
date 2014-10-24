@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	validKeyspaceName = "^[a-zA-Z][a-zA-Z0-9_]*$"
+	// Keyspace names are 32 or fewer alpha-numeric characters and underscores, the first of which is an alpha character.
+	validKeyspaceName = `^[a-zA-Z][a-zA-Z0-9_]{0,31}$`
 )
 
 // CassandraClient
@@ -17,7 +18,7 @@ type CassandraClient struct {
 	config *gocql.ClusterConfig
 }
 
-// NewCassandra
+// NewCassandra will initialise the cluster configuration and return a CassandraClient.
 func NewCassandra(hosts []string) (client MigrationClient) {
 	config := gocql.NewCluster(hosts...)
 	client = &CassandraClient{config: config}
@@ -25,7 +26,7 @@ func NewCassandra(hosts []string) (client MigrationClient) {
 	return
 }
 
-// FindAppliedSet
+// FindAppliedSet will find the currently applied migration ids to compare to the local set available in the local migrations folder.
 func (cl *CassandraClient) FindAppliedSet(keyspace string) (appliedSet set.Set, err error) {
 	var (
 		session *gocql.Session
@@ -122,7 +123,7 @@ func (cl *CassandraClient) createSession() (session *gocql.Session, err error) {
 	return
 }
 
-// keyspace
+// keyspace validates the name of the keyspace and if valid sets it for the current configuration.
 func (cl *CassandraClient) keyspace(name string) (err error) {
 	var (
 		ksMatcher *regexp.Regexp
@@ -134,7 +135,7 @@ func (cl *CassandraClient) keyspace(name string) (err error) {
 	}
 
 	if !ksMatcher.MatchString(name) {
-		err = errors.New("Keyspace " + name + "is invalid.")
+		err = errors.New("Keyspace " + name + " is invalid.")
 		return
 	}
 

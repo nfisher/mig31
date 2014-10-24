@@ -5,6 +5,7 @@ import (
 	"github.com/hailocab/mig31/set"
 )
 
+// Offline client should be used where its desirable to output schema changes but not connect to C*.
 type OfflineClient struct{}
 
 func NewOffline(hosts []string) (client MigrationClient) {
@@ -12,17 +13,13 @@ func NewOffline(hosts []string) (client MigrationClient) {
 	return
 }
 
-// FindAppliedSet find the set of migrations that are currently applied.
+// FindAppliedSet returns an empty set as there is no way to know what migrations have been run.
 func (cl *OfflineClient) FindAppliedSet(keyspace string) (appliedSet set.Set, err error) {
 	appliedSet = set.New()
 	return
 }
 
-func (cl *OfflineClient) Lock() (ticketNum int, err error) {
-	ticketNum = 1
-	return
-}
-
+// CreateSchema will print out the keyspace and table for the migration metadata.
 func (cl *OfflineClient) CreateSchema(strategy, option string) (err error) {
 	fmt.Println("-- create migrations keyspace")
 	fmt.Println(migKeyspace(strategy, option))

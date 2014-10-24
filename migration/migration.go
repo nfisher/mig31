@@ -7,15 +7,16 @@ import (
 )
 
 const (
-	upMarker         = "-- @up\n"
-	downMarker       = "\n-- @down\n"
-	minMarkerSplit   = 2
+	upMarker       = "-- @up\n"
+	downMarker     = "\n-- @down\n"
+	minMarkerSplit = 2
 )
 
 type Migrations []Migration
 
 type MigrationIter func(*Migration) *Migration
 
+// Apply will take the functors and transform the migrations passing the result to the next functor.
 func (migs Migrations) Apply(fns ...MigrationIter) {
 	for _, m := range migs {
 		mp := &m
@@ -35,6 +36,7 @@ type Migration struct {
 	DownMigration string
 }
 
+// New will create a new migration with the supplied source name, up and down migration.
 func New(source, up, down string) (migration *Migration) {
 	migration = &Migration{Source: source, UpMigration: up, DownMigration: down}
 	return

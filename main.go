@@ -79,10 +79,9 @@ func main() {
 		runtime.ExitWithError(err, runtime.ExitErrorReadingMigrations)
 	}
 
-	//lockId, err =
 	iters := []migration.MigrationIter{UpdateSourceSet(env.Keyspace), UpdateStrategy(env)}
 
-	if flags.Offline || flags.Verbose {
+	if flags.Offline || flags.Verbose || flags.DryRun {
 		iters = append(iters, PrintUp)
 	}
 
