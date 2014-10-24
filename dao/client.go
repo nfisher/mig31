@@ -1,47 +1,44 @@
 package dao
 
 import (
+	"fmt"
 	"github.com/hailocab/mig31/set"
 )
 
+const (
+	migrationKeyspace = `CREATE KEYSPACE "migration"
+    WITH replication = { 'class': '%v', %v }
+    AND durable_writes = true;`
+
+	migrationTable = `CREATE TABLE migration.migrations (
+    keyspace_name TEXT PRIMARY KEY,
+    ticketNumber INT,
+    nextTicketNumber INT,
+    migration_ids SET<TEXT>
+  );`
+)
+
 type MigrationClient interface {
-	FindAppliedSet(schema string) (appliedSet set.Set, err error)
-}
-
-type OfflineClient struct {
-}
-
-type CassandraClient struct {
-	hosts []string
+	FindAppliedSet(keyspace string) (appliedSet set.Set, err error)
+	CreateSchema(strategy, options string) (err error)
 }
 
 func New(hosts []string) (client MigrationClient) {
 	if len(hosts) == 1 && hosts[0] == "" {
-		client = &OfflineClient{}
+		client = NewOffline(hosts)
 		return
 	}
 
-	client = &CassandraClient{hosts: hosts}
+	client = NewCassandra(hosts)
 	return
 }
 
-// FindAppliedSet find the set of migrations that are currently applied.
-func (cl *OfflineClient) FindAppliedSet(schema string) (appliedSet set.Set, err error) {
-	appliedSet = set.New()
+func migKeyspace(strategy, options string) (cql string) {
+	cql = fmt.Sprintf(migrationKeyspace, strategy, options)
 	return
 }
 
-func (cl *OfflineClient) Lock() (ticketNum int, err error) {
-	ticketNum = 1
-	return
-}
-
-func (cl *CassandraClient) FindAppliedSet(schema string) (appliedSet set.Set, err error) {
-	appliedSet = set.New()
-	return
-}
-
-func (cl *CassandraClient) Lock() (ticketNum int, err error) {
-	ticketNum = 1
+func migTable() (cql string) {
+	cql = migrationTable
 	return
 }

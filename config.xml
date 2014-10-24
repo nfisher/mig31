@@ -2,7 +2,7 @@
   <environments>
     <environment name="dev" host="192.168.33.10" keyspace="release">
       <confirmisoptional>true</confirmisoptional>
-      <placement strategy="SimpleStrategy" options="replication_factor: 1"/>
+      <placement strategy="SimpleStrategy" options="'replication_factor': 1"/>
     </environment>
   </environments>
 </migrations>

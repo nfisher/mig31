@@ -15,21 +15,6 @@ const (
 	strategyVariable = "$${placement_strategy}"
 	optionsVariable  = "$${strategy_options}"
 	unlimitedReplace = -1
-	migrationSchema  = `
-  -- @up
-
-  CREATE KEYSPACE "migrations"
-    WITH replication = { 'class': '$${placement_strategy}', $${strategy_options} }
-    AND durable_writes = true;
-
-  CREATE TABLE migrations.migrations (
-    keyspace_name TEXT PRIMARY KEY,
-    ticketNumber INT,
-    nextTicketNumber INT,
-    migration_ids SET<TEXT>
-  ) WITH COMPACT STORAGE AND
-  compaction={'class': 'SizeTieredCompactionStrategy'} AND
-  compression={'sstable_compression': 'SnappyCompressor'};`
 )
 
 // main is the entry point for the application.
@@ -57,13 +42,15 @@ func main() {
 		runtime.ExitWithError(err, runtime.ExitErrorReadingEnvConfig)
 	}
 
+	cl := dao.New(env.Hosts())
+
 	// initialise the migration schema
 	if flags.Initialise {
-		err = Initialise(env)
+		err = cl.CreateSchema(env.Strategy(), env.Options())
 		if err != nil {
 			runtime.ExitWithError(err, runtime.ExitUnableToCreateSchema)
 		}
-		runtime.ExitWithMessage("Created migration schema.", 0)
+		return
 	}
 
 	// generate diffSet of available and applied migrations.
@@ -72,7 +59,6 @@ func main() {
 		runtime.ExitWithError(err, runtime.ExitErrorReadingMigrations)
 	}
 
-	cl := dao.New(env.Hosts())
 	appliedSet, err := cl.FindAppliedSet(env.Keyspace)
 	if err != nil {
 		runtime.ExitWithError(err, runtime.ExitErrorReadingMigrations)
@@ -100,14 +86,16 @@ func main() {
 		iters = append(iters, PrintUp)
 	}
 
-	if !flags.DryRun {
-		iters = append(iters, UpdateSchema(cl))
+	if !flags.DryRun && !flags.Offline {
+		runtime.ExitWithMessage("Sorry not implemented yet", runtime.ExitUnimplemented)
+		//iters = append(iters, UpdateSchema(cl))
 	}
 
 	// TODO: (NF 2014-10-21) This should probably error.
 	migs.Apply(iters...)
 }
 
+// UpdateSchema will apply the perscribed schema changes to the appropriate keyspace.
 func UpdateSchema(cl dao.MigrationClient) migration.MigrationIter {
 	return func(m *migration.Migration) (migration *migration.Migration) {
 		migration = m
@@ -115,6 +103,7 @@ func UpdateSchema(cl dao.MigrationClient) migration.MigrationIter {
 	}
 }
 
+// UpdateSourceSet will append the migration source id to the set in the migrations table associated with this keyspace.
 func UpdateSourceSet(ks string) migration.MigrationIter {
 	return func(m *migration.Migration) (migration *migration.Migration) {
 		update := "\nUPDATE migrations.migrations SET migration_ids = migration_ids + {'" + m.Source + "'} WHERE keyspace_name = '" + ks + "';"
@@ -124,6 +113,7 @@ func UpdateSourceSet(ks string) migration.MigrationIter {
 	}
 }
 
+// UpdateStrategy will update the strategy for stuff.
 func UpdateStrategy(env *config.Environment) migration.MigrationIter {
 	return func(m *migration.Migration) (migration *migration.Migration) {
 		up := strings.Replace(m.UpMigration, strategyVariable, env.Strategy(), unlimitedReplace)
@@ -135,12 +125,13 @@ func UpdateStrategy(env *config.Environment) migration.MigrationIter {
 
 }
 
+// PrintUp will print the up migration.
 func PrintUp(m *migration.Migration) (migration *migration.Migration) {
 	fmt.Println(m.UpMigration)
 	return
 }
 
-func Initialise(env *config.Environment) (err error) {
+func Initialise(cl dao.MigrationClient) (err error) {
 
 	return
 }
