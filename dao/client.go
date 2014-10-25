@@ -27,13 +27,13 @@ type MigrationClient interface {
 	Identity(keyspace string) (err error)
 }
 
-func New(hosts []string) (client MigrationClient) {
+func New(hosts []string, username, password string) (client MigrationClient) {
 	if len(hosts) == 1 && hosts[0] == "" {
 		client = NewOffline(hosts)
 		return
 	}
 
-	client = NewCassandra(hosts)
+	client = NewCassandra(hosts, username, password)
 	return
 }
 

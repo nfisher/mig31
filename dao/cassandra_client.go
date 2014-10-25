@@ -19,13 +19,17 @@ type CassandraClient struct {
 }
 
 // NewCassandra will initialise the cluster configuration and return a CassandraClient.
-func NewCassandra(hosts []string) (client MigrationClient) {
+func NewCassandra(hosts []string, username, password string) (client MigrationClient) {
 	config := gocql.NewCluster(hosts...)
+	if username != "" {
+		config.Authenticator = &gocql.PasswordAuthenticator{Username: username, Password: password}
+	}
 	client = &CassandraClient{config: config}
 
 	return
 }
 
+// Identity will output the identity of the specified keyspace as a SHA digest.
 func (cl *CassandraClient) Identity(keyspace string) (err error) {
 	var (
 		session *gocql.Session

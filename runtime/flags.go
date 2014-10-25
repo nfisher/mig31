@@ -9,6 +9,8 @@ type Flags struct {
 	MigrationsPath  string
 	ConfigPath      string
 	EnvironmentName string
+	Username        string
+	Password        string
 	DryRun          bool
 	Verbose         bool
 	Offline         bool
@@ -52,6 +54,8 @@ func ParseFlags() (flags *Flags) {
 	flag.StringVar(&flags.ConfigPath, "config", "config.xml", "Configuration file that specifies placement and strategy options.")
 	flag.StringVar(&flags.EnvironmentName, "env", "", "Name of environment to target.")
 	flag.StringVar(&flags.MigrationsPath, "migrations", "./migrations", "Path to the migrations folder.")
+	flag.StringVar(&flags.Username, "username", "", "Username to authenticate to Cassandra.")
+	flag.StringVar(&flags.Password, "password", "", "Password to authenticate to Cassandra.")
 	flag.Parse()
 
 	return

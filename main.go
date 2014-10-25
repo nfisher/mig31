@@ -41,9 +41,9 @@ func main() {
 		runtime.ExitWithError(err, runtime.ExitErrorReadingEnvConfig)
 	}
 
-	cl := dao.New(env.Hosts())
+	cl := dao.New(env.Hosts(), flags.Username, flags.Password)
 
-	// initialise the migration schema
+	// initialise the migration schema.
 	if flags.Initialise {
 		err = cl.CreateSchema(env.Strategy(), env.Options())
 		if err != nil {
@@ -52,6 +52,7 @@ func main() {
 		return
 	}
 
+	// output an identity of a keyspace as a SHA digest.
 	if flags.Identity {
 		err = cl.Identity(env.Keyspace)
 		if err != nil {
