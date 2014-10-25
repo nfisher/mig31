@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"errors"
 	"fmt"
 	"github.com/hailocab/mig31/set"
 )
@@ -16,6 +17,11 @@ func NewOffline(hosts []string) (client MigrationClient) {
 // FindAppliedSet returns an empty set as there is no way to know what migrations have been run.
 func (cl *OfflineClient) FindAppliedSet(keyspace string) (appliedSet set.Set, err error) {
 	appliedSet = set.New()
+	return
+}
+
+func (cl *OfflineClient) Identity(keyspace string) (err error) {
+	err = errors.New("Are ye daft wee boy you kant get an identity offline.")
 	return
 }
 

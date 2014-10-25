@@ -24,7 +24,6 @@ func main() {
 		env          *config.Environment
 		availableSet set.Set
 		migs         migration.Migrations
-		//lockId      int
 	)
 
 	// parse and validate flags
@@ -47,6 +46,14 @@ func main() {
 	// initialise the migration schema
 	if flags.Initialise {
 		err = cl.CreateSchema(env.Strategy(), env.Options())
+		if err != nil {
+			runtime.ExitWithError(err, runtime.ExitUnableToCreateSchema)
+		}
+		return
+	}
+
+	if flags.Identity {
+		err = cl.Identity(env.Keyspace)
 		if err != nil {
 			runtime.ExitWithError(err, runtime.ExitUnableToCreateSchema)
 		}

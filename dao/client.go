@@ -24,6 +24,7 @@ const (
 type MigrationClient interface {
 	FindAppliedSet(keyspace string) (appliedSet set.Set, err error)
 	CreateSchema(strategy, options string) (err error)
+	Identity(keyspace string) (err error)
 }
 
 func New(hosts []string) (client MigrationClient) {

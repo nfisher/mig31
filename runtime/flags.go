@@ -13,6 +13,7 @@ type Flags struct {
 	Verbose         bool
 	Offline         bool
 	Initialise      bool
+	Identity        bool
 }
 
 func Usage() {
@@ -47,6 +48,7 @@ func ParseFlags() (flags *Flags) {
 	flag.BoolVar(&flags.DryRun, "dryrun", false, "Dry run and display the changes that would be applied. Implies verbose.")
 	flag.BoolVar(&flags.Verbose, "verbose", false, "Enable verbose output.")
 	flag.BoolVar(&flags.Initialise, "init", false, "Initialise the migration keyspace.")
+	flag.BoolVar(&flags.Identity, "identity", false, "Describe the keyspace and calculate a SHA as an identity.")
 	flag.StringVar(&flags.ConfigPath, "config", "config.xml", "Configuration file that specifies placement and strategy options.")
 	flag.StringVar(&flags.EnvironmentName, "env", "", "Name of environment to target.")
 	flag.StringVar(&flags.MigrationsPath, "migrations", "./migrations", "Path to the migrations folder.")

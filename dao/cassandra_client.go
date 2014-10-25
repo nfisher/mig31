@@ -26,14 +26,43 @@ func NewCassandra(hosts []string) (client MigrationClient) {
 	return
 }
 
+func (cl *CassandraClient) Identity(keyspace string) (err error) {
+	var (
+		session *gocql.Session
+		rows    []map[string]interface{}
+	)
+
+	err = cl.keyspace("system")
+	if err != nil {
+		return
+	}
+
+	session, err = cl.createSession()
+	if err != nil {
+		return
+	}
+	defer session.Close()
+
+	q := `SELECT *
+          FROM schema_columns
+          WHERE keyspace_name = ?`
+	colFamilyIter := session.Query(q, keyspace).Iter()
+	rows, err = colFamilyIter.SliceMap()
+	if err != nil {
+		err = errors.New("Unable to retrieve column definition: " + err.Error())
+		return
+	}
+	fmt.Println(rows)
+
+	return
+}
+
 // FindAppliedSet will find the currently applied migration ids to compare to the local set available in the local migrations folder.
 func (cl *CassandraClient) FindAppliedSet(keyspace string) (appliedSet set.Set, err error) {
 	var (
 		session *gocql.Session
 		rows    []map[string]interface{}
 	)
-
-	q := `SELECT migration_ids FROM migrations WHERE keyspace_name=?`
 
 	// change the default keyspace and then create the session.
 	err = cl.keyspace(keyspaceName)
@@ -47,6 +76,7 @@ func (cl *CassandraClient) FindAppliedSet(keyspace string) (appliedSet set.Set, 
 	}
 	defer session.Close()
 
+	q := `SELECT migration_ids FROM migrations WHERE keyspace_name=?`
 	appliedSetIter := session.Query(q, keyspace).Iter()
 
 	rows, err = appliedSetIter.SliceMap()
@@ -139,8 +169,7 @@ func (cl *CassandraClient) keyspace(name string) (err error) {
 		return
 	}
 
-	config := cl.config
-	config.Keyspace = name
+	cl.config.Keyspace = name
 
 	return
 }
