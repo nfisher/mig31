@@ -20,6 +20,12 @@ format: $(SRC)
 .PHONY: cov
 cov:
 	go test -coverprofile=coverage.out
+	go tool cover -func=coverage.out
+
+.PHONY: htmlcov
+htmlcov:
+	go test -coverprofile=coverage.out
+	go tool cover -html=coverage.out
 
 .PHONY: test
 test:

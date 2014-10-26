@@ -28,3 +28,6 @@ mig31
 # vim stuff
 *.sw?
 tags
+
+# coverage
+coverage.out
