@@ -1,4 +1,4 @@
-package migration
+package main
 
 import (
 	"errors"
@@ -37,7 +37,7 @@ type Migration struct {
 }
 
 // New will create a new migration with the supplied source name, up and down migration.
-func New(source, up, down string) (migration *Migration) {
+func NewMigration(source, up, down string) (migration *Migration) {
 	migration = &Migration{Source: source, UpMigration: up, DownMigration: down}
 	return
 }
@@ -61,7 +61,7 @@ func ParseMigration(migrationText string, source string) (migration *Migration, 
 		downMigration = split[1]
 	}
 
-	migration = New(basename, upMigration, downMigration)
+	migration = NewMigration(basename, upMigration, downMigration)
 
 	return
 }

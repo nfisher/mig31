@@ -1,8 +1,7 @@
-package config
+package main
 
 import (
 	"errors"
-	"github.com/hailocab/mig31/runtime"
 	"io"
 	"io/ioutil"
 	"os"
@@ -27,7 +26,7 @@ func readFileContents(filename string) (contents string, err error) {
 }
 
 // ReadEnvConfig reads the environments configuration file that contains C* host, placement strategy and options.
-func ReadEnvConfig(flags *runtime.Flags) (env *Environment, err error) {
+func ReadEnvConfig(flags *Flags) (env *Environment, err error) {
 	var (
 		contents string
 		envs     *Environments

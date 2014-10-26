@@ -1,10 +1,9 @@
-package dao
+package main
 
 import (
 	"errors"
 	"fmt"
 	"github.com/gocql/gocql"
-	"github.com/hailocab/mig31/set"
 	"regexp"
 )
 
@@ -62,7 +61,7 @@ func (cl *CassandraClient) Identity(keyspace string) (err error) {
 }
 
 // FindAppliedSet will find the currently applied migration ids to compare to the local set available in the local migrations folder.
-func (cl *CassandraClient) FindAppliedSet(keyspace string) (appliedSet set.Set, err error) {
+func (cl *CassandraClient) FindAppliedSet(keyspace string) (appliedSet Set, err error) {
 	var (
 		session *gocql.Session
 		rows    []map[string]interface{}
@@ -94,7 +93,7 @@ func (cl *CassandraClient) FindAppliedSet(keyspace string) (appliedSet set.Set, 
 		return
 	}
 
-	appliedSet = set.New()
+	appliedSet = NewStringsSet()
 	if len(rows) == 0 {
 		return
 	}

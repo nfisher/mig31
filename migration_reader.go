@@ -1,8 +1,7 @@
-package migration
+package main
 
 import (
 	"errors"
-	"github.com/hailocab/mig31/set"
 	"io/ioutil"
 	"os"
 	"path"
@@ -16,7 +15,7 @@ type MigrationReader struct {
 }
 
 // NewReader will prepare a reader for the specified CQL migration file set.
-func NewReader(dirPath string, targetSet set.Set) (reader *MigrationReader) {
+func NewReader(dirPath string, targetSet Set) (reader *MigrationReader) {
 	migrationFiles := make([]string, 0, len(targetSet))
 	for k := range targetSet {
 		migrationFiles = append(migrationFiles, k)
@@ -27,7 +26,7 @@ func NewReader(dirPath string, targetSet set.Set) (reader *MigrationReader) {
 }
 
 // AvailableSet returns a set of the migration filenames found in dirPath.
-func AvailableSet(dirPath string) (availableSet set.Set, err error) {
+func AvailableSet(dirPath string) (availableSet Set, err error) {
 	var (
 		info  os.FileInfo
 		files []os.FileInfo
@@ -53,7 +52,7 @@ func AvailableSet(dirPath string) (availableSet set.Set, err error) {
 		return
 	}
 
-	availableSet = set.New()
+	availableSet = NewStringsSet()
 
 	for _, f := range files {
 		if !f.IsDir() && strings.HasSuffix(f.Name(), ".cql") {

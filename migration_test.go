@@ -1,4 +1,4 @@
-package migration
+package main
 
 import (
 	"testing"
@@ -87,7 +87,7 @@ func Test_should_apply_environment_values_to_up_migration(t *testing.T) {
 
 func Test_should_generate_full_schema_with_empty_set(t *testing.T) {
 	migs := Migrations{Migration{UpMigration: expectedParsedUp}}
-	_, err := migs.GenerateSchemaFrom(set.New())
+	_, err := migs.GenerateSchemaFrom(NewStringsSet())
 	if err != nil {
 		t.Fatal(err)
 	}

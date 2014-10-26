@@ -1,4 +1,4 @@
-package runtime
+package main
 
 import (
 	"errors"
@@ -37,14 +37,14 @@ func (flags *Flags) Validate() (err error) {
 	return
 }
 
-func New() (flags *Flags) {
+func NewFlags() (flags *Flags) {
 	flags = &Flags{}
 	return
 }
 
 // Flags parses all of the command-line flags and returns them as a Flags.
 func ParseFlags() (flags *Flags) {
-	flags = New()
+	flags = NewFlags()
 
 	flag.BoolVar(&flags.Offline, "offline", false, "Outputs the full schema without connecting to Cassandra.")
 	flag.BoolVar(&flags.DryRun, "dryrun", false, "Dry run and display the changes that would be applied. Implies verbose.")

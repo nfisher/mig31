@@ -1,8 +1,8 @@
-package set
+package main
 
 type Set map[string]bool
 
-func New() (set Set) {
+func NewStringsSet() (set Set) {
 	set = Set{}
 	return
 }
@@ -25,7 +25,7 @@ func (set Set) Len() (length int) {
 
 // Diff returns a new set with the values the left set has that are absent from the right set.
 func (left Set) Diff(right Set) (diff Set) {
-	diff = New()
+	diff = NewStringsSet()
 	for l := range left {
 		if !right.Contains(l) {
 			diff.Add(l)
@@ -35,7 +35,7 @@ func (left Set) Diff(right Set) (diff Set) {
 }
 
 func (left Set) Union(right Set) (union Set) {
-	union = New()
+	union = NewStringsSet()
 	for l := range left {
 		union.Add(l)
 	}
@@ -47,7 +47,7 @@ func (left Set) Union(right Set) (union Set) {
 }
 
 func (left Set) Intersection(right Set) (intersection Set) {
-	intersection = New()
+	intersection = NewStringsSet()
 	for l := range left {
 		if right[l] {
 			intersection.Add(l)

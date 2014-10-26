@@ -1,9 +1,8 @@
-package dao
+package main
 
 import (
 	"errors"
 	"fmt"
-	"github.com/hailocab/mig31/set"
 )
 
 // Offline client should be used where its desirable to output schema changes but not connect to C*.
@@ -15,8 +14,8 @@ func NewOffline(hosts []string) (client MigrationClient) {
 }
 
 // FindAppliedSet returns an empty set as there is no way to know what migrations have been run.
-func (cl *OfflineClient) FindAppliedSet(keyspace string) (appliedSet set.Set, err error) {
-	appliedSet = set.New()
+func (cl *OfflineClient) FindAppliedSet(keyspace string) (appliedSet Set, err error) {
+	appliedSet = NewStringsSet()
 	return
 }
 

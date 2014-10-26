@@ -19,23 +19,11 @@ format: $(SRC)
 
 .PHONY: cov
 cov:
-	go test -coverprofile=coverage.out $(TEST) $(PROJECT)
+	go test -coverprofile=coverage.out
 
 .PHONY: test
 test:
 	go test ./...
-
-.PHONY: test-main
-test-main:
-	go test $(PROJECT)
-
-.PHONY: test-config
-test-config:
-	go test $(PROJECT)/config
-
-.PHONY: test-migration
-test-migration:
-	go test $(PROJECT)/migration
 
 .PHONY: run
 run: $(EXE)

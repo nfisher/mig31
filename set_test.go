@@ -1,8 +1,17 @@
-package set
+package main
 
 import (
 	"testing"
 )
+
+func Test_inequality(t *testing.T) {
+	s1 := Set{"hello": true, "world": true}
+	s2 := Set{"hello": true, "Nathan": true}
+
+	if s1.Equal(s2) {
+		t.Fatal("Sets should not be equal but were", s1)
+	}
+}
 
 func Test_union(t *testing.T) {
 	s1 := Set{"hello": true, "world": true}

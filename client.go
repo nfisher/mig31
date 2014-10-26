@@ -1,8 +1,7 @@
-package dao
+package main
 
 import (
 	"fmt"
-	"github.com/hailocab/mig31/set"
 )
 
 const (
@@ -22,12 +21,12 @@ const (
 )
 
 type MigrationClient interface {
-	FindAppliedSet(keyspace string) (appliedSet set.Set, err error)
+	FindAppliedSet(keyspace string) (appliedSet Set, err error)
 	CreateSchema(strategy, options string) (err error)
 	Identity(keyspace string) (err error)
 }
 
-func New(hosts []string, username, password string) (client MigrationClient) {
+func NewClient(hosts []string, username, password string) (client MigrationClient) {
 	if len(hosts) == 1 && hosts[0] == "" {
 		client = NewOffline(hosts)
 		return
