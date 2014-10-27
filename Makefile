@@ -2,19 +2,17 @@
 SHELL  = /bin/sh
 PROJECT = github.com/hailocab/mig31
 EXE  = $(GOPATH)/bin/mig31
-SRC  = $(wildcard *.go)
-TEST = $(wildcard *_test.go)
 GOPROCS=4
 
 .PHONY: all
-all: $(SRC) $(EXE) 
+all: $(EXE)
 
 .PHONY: clean
 clean:
 	go clean -i ./...
 
 .PHONY: format
-format: $(SRC)
+format:
 	go fmt ./...
 
 .PHONY: cov
