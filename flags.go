@@ -51,7 +51,7 @@ func ParseFlags() (flags *Flags) {
 	flag.BoolVar(&flags.Verbose, "verbose", false, "Enable verbose output.")
 	flag.BoolVar(&flags.Initialise, "init", false, "Initialise the migration keyspace.")
 	flag.BoolVar(&flags.Identity, "identity", false, "Describe the keyspace and calculate a SHA as an identity.")
-	flag.StringVar(&flags.ConfigPath, "config", "config.xml", "Configuration file that specifies placement and strategy options.")
+	flag.StringVar(&flags.ConfigPath, "config", "config.json", "Configuration file that specifies placement and strategy options.")
 	flag.StringVar(&flags.EnvironmentName, "env", "", "Name of environment to target.")
 	flag.StringVar(&flags.MigrationsPath, "migrations", "./migrations", "Path to the migrations folder.")
 	flag.StringVar(&flags.Username, "username", "", "Username to authenticate to Cassandra.")

@@ -32,7 +32,7 @@ test:
 
 .PHONY: run
 run: all
-	mig31 -env=dev -offline
+	./mig31 -env=dev -offline
 
 .PHONY: install
 install: cov

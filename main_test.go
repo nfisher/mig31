@@ -6,7 +6,7 @@ import (
 
 func Test_flag_defaults_should_match(t *testing.T) {
 	expected := NewFlags()
-	expected.ConfigPath = "config.xml"
+	expected.ConfigPath = "config.json"
 	expected.MigrationsPath = "./migrations"
 	actual := ParseFlags()
 

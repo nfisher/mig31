@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 func readFileContents(filename string) (contents string, err error) {
@@ -37,7 +38,9 @@ func ReadEnvConfig(flags *Flags) (env *Environment, err error) {
 		return
 	}
 
-	envs, err = UnmarshalConfig(contents)
+	isXml := strings.HasSuffix(flags.ConfigPath, ".xml")
+
+	envs, err = UnmarshalConfig(contents, isXml)
 	if err != nil {
 		return
 	}

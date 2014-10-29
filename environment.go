@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"strings"
 )
@@ -10,20 +11,20 @@ const (
 )
 
 type Environments struct {
-	Environments []Environment `xml:"environments>environment"`
+	Environments []Environment `xml:"environments>environment" json:"environments"`
 }
 
 type Placement struct {
-	Strategy string `xml:"strategy,attr"`
-	Options  string `xml:"options,attr"`
+	Strategy string `xml:"strategy,attr" json:"strategy"`
+	Options  string `xml:"options,attr" json:"options"`
 }
 
 type Environment struct {
-	Name              string    `xml:"name,attr"`
-	Host              string    `xml:"host,attr"`
-	Keyspace          string    `xml:"keyspace,attr"`
-	ConfirmIsOptional bool      `xml:"confirmisoptional,omitempty"`
-	Placement         Placement `xml:"placement"`
+	Name              string    `xml:"name,attr" json:"name"`
+	Host              string    `xml:"host,attr" json:"cluster"`
+	Keyspace          string    `xml:"keyspace,attr" json:"keyspace"`
+	ConfirmIsOptional bool      `xml:"confirmisoptional,omitempty" json:"confirmisoptional,omitempty"`
+	Placement         Placement `xml:"placement" json:"placement"`
 }
 
 func NewEnvironment(name, host, strategy, options, keyspace string, confirm bool) (environment *Environment) {
@@ -35,7 +36,21 @@ type StrategyTarget interface {
 	CassandraStrategy(strategy, options string)
 }
 
-func UnmarshalConfig(config string) (env *Environments, err error) {
+func UnmarshalConfig(config string, isXml bool) (env *Environments, err error) {
+	if isXml {
+		return unmarshalXmlConfig(config)
+	}
+
+	return unmarshalJsonConfig(config)
+}
+
+func unmarshalJsonConfig(config string) (env *Environments, err error) {
+	env = new(Environments)
+	err = json.Unmarshal([]byte(config), env)
+	return
+}
+
+func unmarshalXmlConfig(config string) (env *Environments, err error) {
 	env = new(Environments)
 	err = xml.Unmarshal([]byte(config), env)
 	return
