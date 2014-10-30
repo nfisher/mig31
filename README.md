@@ -20,7 +20,29 @@ mig31 -env=dev -dryrun # output the proposed schema based on what migrations ha
 mig31 -env=dev -dryrun | cqlsh 10.2.0.21  # apply the proprosed schema
 ```
 
-Sample Config (config.xml):
+Sample Config (config.json: default):
+
+```
+{
+  "environments": [
+      {
+        "name": "dev",
+        "cluster":"192.168.33.10",
+        "confirmisoptional": true,
+        "keyspace": "release",
+        "placement": { "strategy": "SimpleStrategy", "options": "'replication_factor': 1" }
+      },
+      {
+        "name": "lve-prem",
+        "cluster": "lve-pre.local",
+        "keyspace": "release",
+        "placement": { "strategy": "NetworkTopologyStrategy", "options": "eu-west-1 : 3, us-east-1 : 3, ap-northeast-1 : 3" }
+      }
+    ]
+}
+```
+
+Sample Config (config.xml:  -config=config.xml):
 
 ```
 <migrations>
