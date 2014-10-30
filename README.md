@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/nfisher/mig31.svg?branch=master)](https://travis-ci.org/nfisher/mig31)
 
+![Mig 31 Fighter](http://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Russian_Air_Force_MiG-31_inflight_Pichugin.jpg/300px-Russian_Air_Force_MiG-31_inflight_Pichugin.jpg)
+
 ## Overview
 
 Mig31 is a command line tool to aid in the management of Cassandra schemas using CQL3. It's primary difference from other migration tools is that it allows for the specification of placement strategy and strategy options on a per environment basis. The goal in using this tool is to encourage tracking all schema changes with the service they are linked to rather than manually editing in each environment via cqlsh or cassandra-cli.
