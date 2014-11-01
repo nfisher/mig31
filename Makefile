@@ -3,7 +3,7 @@ SHELL := /bin/sh
 GOPROCS := 4
 
 .PHONY: all
-all: get-deps test
+all: get-deps test vet
 	go build
 
 .PHONY: get-deps
@@ -29,6 +29,10 @@ htmlcov: test
 .PHONY: test
 test:
 	go test -coverprofile=coverage.out ./...
+
+.PHONY: vet
+vet:
+	go vet -x ./...
 
 .PHONY: run
 run: all
