@@ -1,30 +1,30 @@
 package main
 
-type Set map[string]bool
+type StringSet map[string]bool
 
-func NewStringsSet() (set Set) {
-	set = Set{}
+func NewStringsSet() (set StringSet) {
+	set = StringSet{}
 	return
 }
 
 // Add adds the value to the set.
-func (set Set) Add(value string) {
+func (set StringSet) Add(value string) {
 	set[value] = true
 }
 
 // Contains checks if the specified value is contained in the set.
-func (set Set) Contains(value string) (contains bool) {
+func (set StringSet) Contains(value string) (contains bool) {
 	contains = set[value]
 	return
 }
 
-func (set Set) Len() (length int) {
+func (set StringSet) Len() (length int) {
 	length = len(set)
 	return
 }
 
 // Diff returns a new set with the values the left set has that are absent from the right set.
-func (left Set) Diff(right Set) (diff Set) {
+func (left StringSet) Diff(right StringSet) (diff StringSet) {
 	diff = NewStringsSet()
 	for l := range left {
 		if !right.Contains(l) {
@@ -34,7 +34,7 @@ func (left Set) Diff(right Set) (diff Set) {
 	return
 }
 
-func (left Set) Union(right Set) (union Set) {
+func (left StringSet) Union(right StringSet) (union StringSet) {
 	union = NewStringsSet()
 	for l := range left {
 		union.Add(l)
@@ -46,7 +46,7 @@ func (left Set) Union(right Set) (union Set) {
 	return
 }
 
-func (left Set) Intersection(right Set) (intersection Set) {
+func (left StringSet) Intersection(right StringSet) (intersection StringSet) {
 	intersection = NewStringsSet()
 	for l := range left {
 		if right[l] {
@@ -56,7 +56,7 @@ func (left Set) Intersection(right Set) (intersection Set) {
 	return
 }
 
-func (left Set) Equal(right Set) (isEqual bool) {
+func (left StringSet) Equal(right StringSet) (isEqual bool) {
 	isEqual = left.Len() == right.Len()
 	for l := range left {
 		isEqual = right.Contains(l)

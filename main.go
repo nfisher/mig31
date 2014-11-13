@@ -16,7 +16,7 @@ func main() {
 	var (
 		err          error
 		env          *Environment
-		availableSet Set
+		availableSet StringSet
 		migs         Migrations
 	)
 

@@ -21,7 +21,7 @@ const (
 )
 
 type MigrationClient interface {
-	FindAppliedSet(keyspace string) (appliedSet Set, err error)
+	FindAppliedSet(keyspace string) (appliedSet StringSet, err error)
 	CreateSchema(strategy, options string) (err error)
 	Identity(keyspace string) (err error)
 }

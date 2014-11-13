@@ -5,8 +5,8 @@ import (
 )
 
 func Test_inequality(t *testing.T) {
-	s1 := Set{"hello": true, "world": true}
-	s2 := Set{"hello": true, "Nathan": true}
+	s1 := StringSet{"hello": true, "world": true}
+	s2 := StringSet{"hello": true, "Nathan": true}
 
 	if s1.Equal(s2) {
 		t.Fatal("Sets should not be equal but were", s1)
@@ -14,17 +14,17 @@ func Test_inequality(t *testing.T) {
 }
 
 func Test_union(t *testing.T) {
-	s1 := Set{"hello": true, "world": true}
-	s2 := Set{"hello": true, "Nathan": true}
+	s1 := StringSet{"hello": true, "world": true}
+	s2 := StringSet{"hello": true, "Nathan": true}
 
 	actual := s1.Union(s2)
-	expectedUnion := Set{"hello": true, "world": true, "Nathan": true}
+	expectedUnion := StringSet{"hello": true, "world": true, "Nathan": true}
 	if actual.Len() != expectedUnion.Len() {
 		t.Fatal("Expected", expectedUnion.Len(), "but was", actual.Len())
 	}
 
 	if !actual.Contains("hello") {
-		t.Fatal("Set does not contain expected element.")
+		t.Fatal("StringSet does not contain expected element.")
 	}
 
 	if !expectedUnion.Equal(actual) {
@@ -33,35 +33,35 @@ func Test_union(t *testing.T) {
 }
 
 func Test_diff(t *testing.T) {
-	s1 := Set{"hello": true, "world": true}
-	s2 := Set{"hello": true, "Nathan": true}
+	s1 := StringSet{"hello": true, "world": true}
+	s2 := StringSet{"hello": true, "Nathan": true}
 
 	actual := s1.Diff(s2)
-	expectedUnion := Set{"world": true}
+	expectedUnion := StringSet{"world": true}
 	if len(actual) != len(expectedUnion) {
 		t.Fatal("Expected", len(expectedUnion), "but was", len(actual))
 	}
 
 	for m := range expectedUnion {
 		if !actual[m] {
-			t.Fatal(m, " not found in set.")
+			t.Fatal(m, " not found in StringSet.")
 		}
 	}
 }
 
 func Test_intersection(t *testing.T) {
-	s1 := Set{"hello": true, "world": true}
-	s2 := Set{"hello": true, "Nathan": true}
+	s1 := StringSet{"hello": true, "world": true}
+	s2 := StringSet{"hello": true, "Nathan": true}
 
 	actual := s1.Intersection(s2)
-	expectedUnion := Set{"hello": true}
+	expectedUnion := StringSet{"hello": true}
 	if len(actual) != len(expectedUnion) {
 		t.Fatal("Expected", len(expectedUnion), "but was", len(actual))
 	}
 
 	for m := range expectedUnion {
 		if !actual[m] {
-			t.Fatal(m, " not found in set.")
+			t.Fatal(m, " not found in StringSet.")
 		}
 	}
 }

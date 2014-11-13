@@ -14,7 +14,7 @@ func NewOffline(hosts []string) (client MigrationClient) {
 }
 
 // FindAppliedSet returns an empty set as there is no way to know what migrations have been run.
-func (cl *OfflineClient) FindAppliedSet(keyspace string) (appliedSet Set, err error) {
+func (cl *OfflineClient) FindAppliedSet(keyspace string) (appliedSet StringSet, err error) {
 	appliedSet = NewStringsSet()
 	return
 }

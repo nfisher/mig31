@@ -7,9 +7,9 @@ import (
 	"regexp"
 )
 
-const (
+var (
 	// Keyspace names are 32 or fewer alpha-numeric characters and underscores, the first of which is an alpha character.
-	validKeyspaceName = `^[a-zA-Z][a-zA-Z0-9_]{0,31}$`
+	ksMatcher = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9_]{0,31}$`)
 )
 
 // CassandraClient
@@ -55,13 +55,16 @@ func (cl *CassandraClient) Identity(keyspace string) (err error) {
 		err = errors.New("Unable to retrieve column definition: " + err.Error())
 		return
 	}
-	fmt.Println(rows)
+
+	for _, row := range rows {
+		fmt.Println(row)
+	}
 
 	return
 }
 
 // FindAppliedSet will find the currently applied migration ids to compare to the local set available in the local migrations folder.
-func (cl *CassandraClient) FindAppliedSet(keyspace string) (appliedSet Set, err error) {
+func (cl *CassandraClient) FindAppliedSet(keyspace string) (appliedSet StringSet, err error) {
 	var (
 		session *gocql.Session
 		rows    []map[string]interface{}
@@ -158,15 +161,6 @@ func (cl *CassandraClient) createSession() (session *gocql.Session, err error) {
 
 // keyspace validates the name of the keyspace and if valid sets it for the current configuration.
 func (cl *CassandraClient) keyspace(name string) (err error) {
-	var (
-		ksMatcher *regexp.Regexp
-	)
-
-	ksMatcher, err = regexp.Compile(validKeyspaceName)
-	if err != nil {
-		return
-	}
-
 	if !ksMatcher.MatchString(name) {
 		err = errors.New("Keyspace " + name + " is invalid.")
 		return

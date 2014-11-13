@@ -15,7 +15,7 @@ type MigrationReader struct {
 }
 
 // NewReader will prepare a reader for the specified CQL migration file set.
-func NewReader(dirPath string, targetSet Set) (reader *MigrationReader) {
+func NewReader(dirPath string, targetSet StringSet) (reader *MigrationReader) {
 	migrationFiles := make([]string, 0, len(targetSet))
 	for k := range targetSet {
 		migrationFiles = append(migrationFiles, k)
@@ -26,7 +26,7 @@ func NewReader(dirPath string, targetSet Set) (reader *MigrationReader) {
 }
 
 // AvailableSet returns a set of the migration filenames found in dirPath.
-func AvailableSet(dirPath string) (availableSet Set, err error) {
+func AvailableSet(dirPath string) (availableSet StringSet, err error) {
 	var (
 		info  os.FileInfo
 		files []os.FileInfo

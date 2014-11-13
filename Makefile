@@ -30,6 +30,10 @@ htmlcov: test
 test:
 	go test -coverprofile=coverage.out ./...
 
+.PHONY: race
+race:
+	go test -race ./...
+
 .PHONY: vet
 vet:
 	go vet -x ./...
