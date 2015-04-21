@@ -1,10 +1,14 @@
 # ex : shiftwidth=2 tabstop=2 softtabstop=2 :
 SHELL := /bin/sh
 GOPROCS := 4
+SRC := $(wildcard *.go)
 
 .PHONY: all
-all: get-deps test vet
-	go build
+all: get-deps vet cov build
+
+.PHONY: build
+build: $(SRC)
+	go build ./...
 
 .PHONY: get-deps
 get-deps:
@@ -23,12 +27,15 @@ cov: test
 	go tool cover -func=coverage.out
 
 .PHONY: htmlcov
-htmlcov: test
+htmlcov: coverage.out
 	go tool cover -html=coverage.out
+
+coverage.out:
+	go test -v -covermode=count -coverprofile=coverage.out
 
 .PHONY: test
 test:
-	go test -coverprofile=coverage.out
+	go test ./...
 
 .PHONY: race
 race:
