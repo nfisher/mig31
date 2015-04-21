@@ -23,7 +23,7 @@ format:
 	go fmt ./...
 
 .PHONY: cov
-cov: test
+cov: coverage.out
 	go tool cover -func=coverage.out
 
 .PHONY: htmlcov
