@@ -28,20 +28,16 @@ type MigrationClient interface {
 
 func NewClient(hosts []string, username, password string) (client MigrationClient) {
 	if len(hosts) == 1 && hosts[0] == "" {
-		client = NewOffline(hosts)
-		return
+		return NewOffline(hosts)
 	}
 
-	client = NewCassandra(hosts, username, password)
-	return
+	return NewCassandra(hosts, username, password)
 }
 
 func migKeyspace(strategy, options string) (cql string) {
-	cql = fmt.Sprintf(migrationKeyspace, keyspaceName, strategy, options)
-	return
+	return fmt.Sprintf(migrationKeyspace, keyspaceName, strategy, options)
 }
 
 func migTable() (cql string) {
-	cql = fmt.Sprintf(migrationTable, keyspaceName)
-	return
+	return fmt.Sprintf(migrationTable, keyspaceName)
 }

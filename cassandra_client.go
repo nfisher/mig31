@@ -3,8 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/gocql/gocql"
 	"regexp"
+
+	"github.com/gocql/gocql"
 )
 
 var (
@@ -25,7 +26,7 @@ func NewCassandra(hosts []string, username, password string) (client MigrationCl
 	}
 	client = &CassandraClient{config: config}
 
-	return
+	return client
 }
 
 // Identity will output the identity of the specified keyspace as a SHA digest.
@@ -37,12 +38,12 @@ func (cl *CassandraClient) Identity(keyspace string) (err error) {
 
 	err = cl.keyspace("system")
 	if err != nil {
-		return
+		return err
 	}
 
 	session, err = cl.createSession()
 	if err != nil {
-		return
+		return err
 	}
 	defer session.Close()
 
@@ -60,7 +61,7 @@ func (cl *CassandraClient) Identity(keyspace string) (err error) {
 		fmt.Println(row)
 	}
 
-	return
+	return nil
 }
 
 // FindAppliedSet will find the currently applied migration ids to compare to the local set available in the local migrations folder.

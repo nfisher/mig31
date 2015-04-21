@@ -9,19 +9,16 @@ import (
 type OfflineClient struct{}
 
 func NewOffline(hosts []string) (client MigrationClient) {
-	client = &OfflineClient{}
-	return
+	return &OfflineClient{}
 }
 
 // FindAppliedSet returns an empty set as there is no way to know what migrations have been run.
 func (cl *OfflineClient) FindAppliedSet(keyspace string) (appliedSet StringSet, err error) {
-	appliedSet = NewStringsSet()
-	return
+	return NewStringsSet(), nil
 }
 
 func (cl *OfflineClient) Identity(keyspace string) (err error) {
-	err = errors.New("Are ye daft wee boy you kant get an identity offline.")
-	return
+	return errors.New("Are ye daft wee boy you kant get an identity offline.")
 }
 
 // CreateSchema will print out the keyspace and table for the migration metadata.
