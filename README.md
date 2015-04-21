@@ -1,6 +1,7 @@
 # Mig31
 
 [![Build Status](https://travis-ci.org/nfisher/mig31.svg?branch=master)](https://travis-ci.org/nfisher/mig31)
+[![Coverage Status](https://coveralls.io/repos/nfisher/mig31/badge.svg)](https://coveralls.io/r/nfisher/mig31)
 
 ![Mig 31 Fighter](http://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Russian_Air_Force_MiG-31_inflight_Pichugin.jpg/300px-Russian_Air_Force_MiG-31_inflight_Pichugin.jpg)
 
