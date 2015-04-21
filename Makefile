@@ -28,7 +28,7 @@ htmlcov: test
 
 .PHONY: test
 test:
-	go test -coverprofile=coverage.out ./...
+	go test -coverprofile=coverage.out
 
 .PHONY: race
 race:
